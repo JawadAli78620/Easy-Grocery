@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "166938749422",
+    "project_id": "easygrocery-ec646",
+    "storage_bucket": "easygrocery-ec646.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166938749422:android:b0590cf32a32c6414b06ff",
+        "android_client_info": {
+          "package_name": "com.smdproject.easygrocery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166938749422-h08dofjmphmia0bv2m4uan653bdfpo49.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smdproject.easygrocery",
+            "certificate_hash": "d9699889b11a069100d375ecdd37ac7593875505"
+          }
+        },
+        {
+          "client_id": "166938749422-1c2nemph5otf860p06shsp602c655trq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVOuYC_voVoMwEVFkYczD5DQcpL5_UP50"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166938749422-1c2nemph5otf860p06shsp602c655trq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
