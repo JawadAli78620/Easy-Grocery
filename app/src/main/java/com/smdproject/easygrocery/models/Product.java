@@ -8,6 +8,10 @@ public class Product {
     private String itemName;
     private String itemDescription;
     private double itemPrice ;
+    private String itemId;
+
+
+
     private final String viewType = "Product";
 
     public String getViewType() {
@@ -20,6 +24,14 @@ public class Product {
 
     public void setItemDescription(String itemDescription) {
         this.itemDescription = itemDescription;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
     public String getImgUri() {

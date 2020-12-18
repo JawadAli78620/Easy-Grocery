@@ -6,13 +6,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.smdproject.easygrocery.R;
@@ -20,14 +25,28 @@ import com.smdproject.easygrocery.adapters.CategoryRvAdapter;
 import com.smdproject.easygrocery.adapters.RecyclerViewAdapter;
 import com.smdproject.easygrocery.models.GroceryStore;
 import com.smdproject.easygrocery.models.Product;
+import com.smdproject.easygrocery.models.ProductCategory;
+import com.squareup.picasso.Picasso;
 
-public class SingleStore extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class SingleStore extends AppCompatActivity implements CategoryRvAdapter.OnItemClickListener {
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private CategoryRvAdapter adapter;
 
+    private TextView mStoreName, mRatingReviews;
+    private ImageView mBgImage, mBackArrow;
+
+    private ArrayList<ProductCategory> categoryList;
+
     private DatabaseReference databaseReference;
+
+    private String categoryId, categoryName, image;
+    private String storeName, storeId, imgUri;
+    private int storeReviews, deliveryCharges;
+    private double storeRating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +54,36 @@ public class SingleStore extends AppCompatActivity {
         setContentView(R.layout.activity_single_store);
 
         recyclerView = findViewById(R.id.single_storeRv);
+        mBgImage = findViewById(R.id.single_bgImg);
+        mStoreName = findViewById(R.id.single_storeNameTv);
+        mRatingReviews = findViewById(R.id.single_reviewsTv);
+        mBackArrow = findViewById(R.id.store_backArrow);
 
-        //populateRvData();
-        adapter = new CategoryRvAdapter(this);
+        categoryList = new ArrayList<>();
 
+        //Get data from the previous intent
+        getIntentStrings();
 
+        adapter = new CategoryRvAdapter(this, this, "categoryRV");
+        getStoresDetails();
+        initFirstRecyclerView();
 
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+        onBackArrowPressed();
+    }
 
+    public void onBackArrowPressed(){
+        mBackArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     private void initFirstRecyclerView() {
@@ -57,12 +97,32 @@ public class SingleStore extends AppCompatActivity {
         }
     }
 
-    /*private void getStoresDetails() {
+    public void getIntentStrings(){
+        Intent intent = getIntent();
+        storeName = intent.getStringExtra("storeName");
+        deliveryCharges = intent.getIntExtra("storeDeliveryCharges", 0);
+        storeRating = intent.getDoubleExtra("storeRating", 0.0);
+        storeReviews = intent.getIntExtra("storeReviews", 0);
+        imgUri = intent.getStringExtra("image");
+        storeId = intent.getStringExtra("storeId");
 
-        initFirstRecyclerView();
+        // Set Store info in header.
+        mStoreName.setText(storeName);
+        mRatingReviews.setText(String.valueOf(storeRating) + "(" + String.valueOf(storeReviews) + ")");
 
+        Picasso.with(this)
+                .load(imgUri)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .into(mBgImage);
+    }
+
+    private void getStoresDetails() {
+
+        System.out.println("Store ID: " + storeId);
         // get details of currently signed in user from database
-        Query query = databaseReference.orderByChild("storeId").equalTo("");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Categories");
+        Query query = databaseReference.child(storeId).orderByChild("categoryId");
+        //Query query = databaseReference.orderByChild("storeId").equalTo(storeId);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -70,31 +130,28 @@ public class SingleStore extends AppCompatActivity {
                 //check until required data get
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     //get Data
-                    storeName = "" + ds.child("StoreName").getValue();
-                    storeId = "" + ds.child("storeId").getValue();
-                    imgUri = "" + ds.child("image").getValue();
-                    storeRating = "" + ds.child("rating").getValue();
-                    storeReviews = "" + ds.child("reviews").getValue();
-                    deliveryCharges = "" + ds.child("deliveryCharges").getValue();
+                    categoryName = "" + ds.child("categoryType").getValue();
+                    categoryId = "" + ds.child("categoryId").getValue();
+                    image = "" + ds.child("image").getValue();
 
-                    GroceryStore storeItem = new GroceryStore();
-                    storeItem.setStoreName(storeName);
-                    storeItem.setDeliveryCharges(Integer.parseInt(deliveryCharges));
-                    storeItem.setNumOfReviews(Integer.parseInt(storeReviews));
-                    storeItem.setRatingValue(Double.parseDouble(storeRating));
-                    storeItem.setImgUri(imgUri);
+                    System.out.println("Category Name: " + categoryName);
 
-                    featuredRvAdapter.addItem(storeItem);
-                    newStoresRvAdapter.addItem(storeItem);
+                    ProductCategory productCategory = new ProductCategory();
+                    productCategory.setCategoryName(categoryName);
+                    productCategory.setCategoryId(categoryId);
+                    productCategory.setImgUri(image);
+
+                    categoryList.add(productCategory);
+                    adapter.addCategoryItem(productCategory);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Home.this, "Data loading failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SingleStore.this, "Data loading failed", Toast.LENGTH_SHORT).show();
             }
         });
-    }*/
+    }
 
     public Uri rawImageToUri(int imgId){
         Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
@@ -105,45 +162,15 @@ public class SingleStore extends AppCompatActivity {
         return imageUri;
     }
 
-    /*public void populateRvData(){
-        adapter = new CategoryRvAdapter(this);
+    @Override
+    public void onItemClick(int position, String tag) {
+        Toast.makeText(this, "Item clicked", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(SingleStore.this, SingleStoreSubcategory.class);
+        intent.putExtra("categoryId", categoryList.get(position).getCategoryId());
+        intent.putExtra("categoryName", categoryList.get(position).getCategoryName());
+        intent.putExtra("storeId", storeId);
+        intent.putExtra("storeName", storeName);
+        startActivity(intent);
+    }
 
-        Product categoryItem = new Product();
-        categoryItem.setCategoryName("Cooking Oil");
-        categoryItem.setCategoryTypes("Dalda, Sufi, Kisan and others");
-        categoryItem.setImgUri(rawImageToUri(R.raw.cooking_oil));
-
-        Product categoryItem2 = new Product();
-        categoryItem2.setCategoryName("Dairy Products");
-        categoryItem2.setCategoryTypes("Olpers, Yougourt, Milkpack and others");
-        categoryItem2.setImgUri(rawImageToUri(R.raw.dairy));
-
-        Product categoryItem3 = new Product();
-        categoryItem3.setCategoryName("HouseHolds");
-        categoryItem3.setCategoryTypes("washing Powder, Soap, toothpaste etc.");
-        categoryItem3.setImgUri(rawImageToUri(R.raw.household));
-
-        Product categoryItem4 = new Product();
-        categoryItem4.setCategoryName("Energy Drinks");
-        categoryItem4.setCategoryTypes("Sting, Red bull, Rockstar, etc.");
-        categoryItem4.setImgUri(rawImageToUri(R.raw.drinks));
-
-        Product categoryItem5 = new Product();
-        categoryItem5.setCategoryName("Spices");
-        categoryItem5.setCategoryTypes("Salt, Chilli, Masalah, etc.");
-        categoryItem5.setImgUri(rawImageToUri(R.raw.spices));
-
-        adapter.addItem(categoryItem);
-        adapter.addItem(categoryItem2);
-        adapter.addItem(categoryItem3);
-        adapter.addItem(categoryItem4);
-        adapter.addItem(categoryItem5);
-
-        //Use Linear Layout Manager
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-
-        recyclerView.setAdapter(adapter);
-
-    }*/
 }

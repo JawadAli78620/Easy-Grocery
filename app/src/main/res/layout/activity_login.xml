@@ -9,12 +9,11 @@
     tools:context=".customer.Login">
 
     <RelativeLayout
-        android:layout_width="200dp"
-        android:padding="10dp"
+        android:layout_width="300dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="0dp"
         android:gravity="center_horizontal"
-        android:layout_height="200dp">
+        android:layout_height="250dp">
 
         <ImageView
             android:id="@+id/splash_logoIv"
@@ -41,6 +40,7 @@
             android:textStyle="bold"/>
 
         <EditText
+            android:id="@+id/login_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"
@@ -55,6 +55,7 @@
             />
 
         <EditText
+            android:id="@+id/login_psw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
@@ -65,18 +66,41 @@
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
             android:layout_marginTop="10dp"
+            android:inputType="textPassword"
             android:background="@drawable/back_arrow_card_view"
             />
 
         <Button
+            android:id="@+id/login_SigninBtn"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Sign In"
             android:padding="10dp"
             android:layout_marginTop="30dp"
             android:background="@drawable/back_arrow_card_view"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="15dp"
             android:layout_gravity="center_horizontal"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                android:text="Don't have an Account?"/>
+            <TextView
+                android:id="@+id/login_signup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:text=" Sign Up"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

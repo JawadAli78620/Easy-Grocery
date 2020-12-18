@@ -11,10 +11,19 @@ public class GroceryStore {
     private int deliveryCharges;
     private double ratingValue;
     private int numOfReviews;
+    private String storeId;
     private final String type = "GroceryStore";
 
     public String getType() {
         return type;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public String getImgUri() {
