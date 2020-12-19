@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,10 +57,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener firebaseAuthStateListner;
 
     private String storeName, deliveryCharges, storeRating, storeReviews, storeId, imgUri;
 
     private ArrayList<GroceryStore> storesList;
+
+    boolean flag = false;
 
 
     @Override
@@ -79,10 +85,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         storesList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference("Stores");
+        mAuth = FirebaseAuth.getInstance();
 
         featuredRvAdapter = new RecyclerViewAdapter(this, this, "featured");
         newStoresRvAdapter = new RecyclerViewAdapter(this, this, "newStores");
 
+        authStateListener();
         populateSliderData();
         //populateRvData();
         getStoresDetails();
@@ -136,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
                 switch (menuItem.getItemId()){
                     case R.id.nav_logout:
-                        Toast.makeText(MainActivity.this, "Logout clicked", Toast.LENGTH_SHORT).show();
                         logOut();
                         break;
                     case R.id.nav_help:
@@ -151,8 +158,49 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         });
     }
 
-    public void logOut(){
+    private void logOut() {
+        try {
+            if (flag){
+                mAuth.signOut();
+                startActivity(new Intent(MainActivity.this, Login.class));
+                finish();
+            }else {
+                Toast.makeText(MainActivity.this, "You Need to login first..", Toast.LENGTH_SHORT).show();
+            }
 
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(this, "Error Logout, Kindly check your Internet connection..", Toast.LENGTH_SHORT).show();
+        }
+        return;
+    }
+
+    public void authStateListener(){
+        firebaseAuthStateListner = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user != null){
+                    flag = true;
+                    return;
+                }
+                else{
+                    flag = false;
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(firebaseAuthStateListner);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(firebaseAuthStateListner);
     }
 
     public void customizeDrawerHeader(){

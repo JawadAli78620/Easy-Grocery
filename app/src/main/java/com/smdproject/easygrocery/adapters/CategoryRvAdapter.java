@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.bumptech.glide.Glide;
 import com.smdproject.easygrocery.R;
+import com.smdproject.easygrocery.models.CartItem;
 import com.smdproject.easygrocery.models.Product;
 import com.smdproject.easygrocery.models.ProductCategory;
 
@@ -26,6 +27,7 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private List<Product> productsList ;
     private List<ProductCategory> categoryList ;
+    private List<CartItem> cartItemsList;
 
     private Context context;
     private OnItemClickListener mOnItemClickListener;
@@ -38,6 +40,7 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         productsList = new ArrayList<>();
         categoryList = new ArrayList<>();
+        cartItemsList = new ArrayList<>();
     }
 
     public void addCategoryItem(ProductCategory category){
@@ -47,6 +50,10 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void addProductItem(Product category){
         this.productsList.add(category);
+        notifyDataSetChanged();
+    }
+    public void addCartItem(CartItem cartItem){
+        this.cartItemsList.add(cartItem);
         notifyDataSetChanged();
     }
 
@@ -59,6 +66,8 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             //View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item_layout, parent, false);
             //viewHolder = new RvAdapterCategoryViewHolder(view, mOnItemClickListener);
             return new RvAdapterCategoryViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item_layout, parent, false), mOnItemClickListener);
+        }else if(mTag == "cartRV"){
+            return new RvAdapterCartViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_item_layout, parent, false), mOnItemClickListener);
         }
        // View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_item_layout, parent, false);
         //pViewHolder = new RvAdapterProductViewHolder(view, mOnItemClickListener);
@@ -76,6 +85,9 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case "subcategoryRV":
                 ((RvAdapterProductViewHolder) holder).bind(position);
                 break;
+            case "cartRV":
+                ((RvAdapterCartViewHolder) holder).bind(position);
+                break;
         }
 
     }
@@ -84,6 +96,8 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public int getItemCount() {
         if(mTag == "categoryRV"){
             return this.categoryList.size();
+        }else if(mTag == "cartRV"){
+            return this.cartItemsList.size();
         }
         return this.productsList.size();
 
@@ -126,7 +140,7 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         ImageView mProductImageView;
         TextView mProductName, mProductPrice;
-        ImageButton mAddItemImgBtn;
+        TextView mitemCount;
 
         OnItemClickListener onItemClickListener;
         public RvAdapterProductViewHolder(@NonNull View itemView, final OnItemClickListener onItemClickListener) {
@@ -136,7 +150,7 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             mProductImageView = itemView.findViewById(R.id.product_imageV);
             mProductName = itemView.findViewById(R.id.product_name);
             mProductPrice = itemView.findViewById(R.id.product_price);
-            mAddItemImgBtn = itemView.findViewById(R.id.product_cartImgBtn);
+            mitemCount = itemView.findViewById(R.id.product_itemCountTv);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,12 +169,43 @@ public class CategoryRvAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     .fitCenter()
                     .into(mProductImageView);
 
-            mAddItemImgBtn.setOnClickListener(new View.OnClickListener() {
+        }
+    }
+
+    public class RvAdapterCartViewHolder extends ViewHolder {
+
+        ImageView mCartProductImg;
+        TextView mCartProductName, mCartProductPrice, mCartProductQuantity;
+        TextView mitemCount;
+
+        OnItemClickListener onItemClickListener;
+        public RvAdapterCartViewHolder(@NonNull View itemView, final OnItemClickListener onItemClickListener) {
+            super(itemView);
+
+            this.onItemClickListener = onItemClickListener;
+            mCartProductImg = itemView.findViewById(R.id.cart_product_imageV);
+            mCartProductName = itemView.findViewById(R.id.cart_product_name);
+            mCartProductPrice = itemView.findViewById(R.id.cart_priceTv);
+            mCartProductQuantity = itemView.findViewById(R.id.cart_qtyTv);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "item Added to cart", Toast.LENGTH_SHORT).show();
+                    onItemClickListener.onItemClick(getAdapterPosition(), mTag);
                 }
             });
+        }
+
+        public void bind(int position){
+            CartItem cartItem = cartItemsList.get(position);
+            mCartProductName.setText(cartItem.getItemName());
+            mCartProductPrice.setText("Rs. "+ String.valueOf(cartItem.getItemPrice()));
+            mCartProductQuantity.setText(String.valueOf(cartItem.getQuantity()));
+            Glide.with(itemView)
+                    .load(cartItem.getImgUri())
+                    .fitCenter()
+                    .into(mCartProductImg);
+
         }
     }
 

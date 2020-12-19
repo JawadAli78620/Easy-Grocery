@@ -115,7 +115,7 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback{
 
     }
 
-    private boolean getLocationPermission() {
+    private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the
          * device. The result of the permission request is handled by a callback,
@@ -125,7 +125,15 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback{
                 == (PackageManager.PERMISSION_GRANTED);
         boolean result1 = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 == (PackageManager.PERMISSION_GRANTED);
-        return result && result1;
+        if(result && result1){
+            locationPermissionGranted = true;
+        }else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    40);
+            ActivityCompat.requestPermissions(Maps.this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 50);
+        }
 
     }
 
@@ -142,8 +150,6 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback{
                     boolean writeStorageAccepted = (grantResults[1] == PackageManager.PERMISSION_GRANTED);
 
                     if (cameraAccepted && writeStorageAccepted) {
-                        //permission enabled
-                        //updateLocationUI();
                         locationPermissionGranted = true;
                     } else {
                         //Permission denied
@@ -161,6 +167,7 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback{
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
+        getLocationPermission();
         updateLocationUI();
 
         getDeviceLocation();

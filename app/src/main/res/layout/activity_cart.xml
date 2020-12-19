@@ -30,10 +30,10 @@
             android:src="@drawable/ic_baseline_arrow_back_24"/>
 
         <TextView
-            android:id="@+id/subcategory_actionbar_text"
+            android:id="@+id/cart_actionbar_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="D Watson"
+            android:text="Your Cart"
             android:textStyle="bold"
             android:paddingLeft="16dp"
             android:layout_gravity="center_vertical"
@@ -56,6 +56,7 @@
             android:textColor="@color/black"/>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/cartRv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none">
@@ -80,6 +81,7 @@
                 android:layout_marginTop="20dp"/>
 
             <TextView
+                android:id="@+id/cart_subtotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rs. 230.0"
@@ -110,6 +112,7 @@
                 android:layout_marginTop="20dp"/>
 
             <TextView
+                android:id="@+id/cart_deliveryFee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rs. 50.0"
@@ -160,6 +163,7 @@
                 android:layout_marginTop="20dp"/>
 
             <TextView
+                android:id="@+id/cart_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rs. 280.0"
@@ -181,6 +185,7 @@
         android:gravity="bottom">
 
         <Button
+            android:id="@+id/cart_placeOrderBtn"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Place Order"
