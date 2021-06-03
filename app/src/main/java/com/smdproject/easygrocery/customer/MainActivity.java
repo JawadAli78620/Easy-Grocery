@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListner;
 
+
     private String storeName, deliveryCharges, storeRating, storeReviews, storeId, imgUri;
 
     private ArrayList<GroceryStore> storesList;
